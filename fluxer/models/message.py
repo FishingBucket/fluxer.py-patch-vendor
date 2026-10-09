@@ -18,6 +18,28 @@ if TYPE_CHECKING:
 
 
 @dataclass(slots=True)
+class AllowedMentions:
+    """Represents an allowed mentions object."""
+
+    users: list[int]
+    roles: list[int]
+    everyone: bool
+    replied_user: bool
+
+    def to_json(self) -> dict[str, Any]:
+        parse = []
+        if self.users: parse.append("users")
+        if self.roles: parse.append("roles")
+        if self.everyone: parse.append("everyone")
+        return {
+            "parse": parse,
+            "users": [str(user) for user in self.users],
+            "roles": [str(role) for role in self.roles],
+            "replied_user": self.replied_user
+        }
+
+
+@dataclass(slots=True)
 class Message:
     """Represents a message in a Fluxer channel."""
 
@@ -26,11 +48,15 @@ class Message:
     content: str
     author: User
     timestamp: str
+    type: int
+
     edited_timestamp: str | None = None
 
     embeds: list[dict[str, Any]] = field(default_factory=list)
     attachments: list[Attachment] = field(default_factory=list)
     mentions: list[User] = field(default_factory=list)
+    mention_roles: list[int] = field(default_factory=list)
+    mentions_everyone: bool = False
     pinned: bool = False
     reactions: list[Reaction] = field(default_factory=list)
     referenced_message: Message | None = None
@@ -56,6 +82,7 @@ class Message:
             content=data.get("content", ""),
             author=author,
             timestamp=data["timestamp"],
+            type=data["type"],
             edited_timestamp=data.get("edited_timestamp"),
             embeds=data.get("embeds", []),
             attachments=attachments,
@@ -67,6 +94,8 @@ class Message:
                 if (ref_data := data.get("referenced_message"))
                 else None
             ),
+            mentions_everyone=data.get("mentions_everyone", False),
+            mention_roles=[int(role) for role in data.get("mention_roles", [])]
         )
 
         # Parse reactions and link them to the message
@@ -104,6 +133,7 @@ class Message:
         embeds: list[Any] | None = None,
         file: File | None = None,
         files: list[File] | None = None,
+        allowed_mentions: AllowedMentions | None = None,
         **kwargs: Any,
     ) -> Message:
         """Send a message to the same channel (without replying).
@@ -114,6 +144,7 @@ class Message:
             embeds: Multiple embeds to include.
             file: A single File object to attach.
             files: Multiple File objects to attach.
+            allowed_mentions: Mentions that actually pass through.
             **kwargs: Additional arguments to pass to send_message
 
         Returns:
@@ -137,6 +168,7 @@ class Message:
             self.channel_id,
             content=content,
             files=file_list,
+            allowed_mentions=allowed_mentions and allowed_mentions.to_json(),
             **combined_kwargs,
         )
         msg = Message.from_data(data, self._http)

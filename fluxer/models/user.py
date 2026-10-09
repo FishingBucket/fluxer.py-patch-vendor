@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
+from enum import IntEnum
 from typing import TYPE_CHECKING, Any
 
 from ..utils import snowflake_to_datetime
@@ -11,6 +12,12 @@ if TYPE_CHECKING:
     from ..http import HTTPClient
     from .channel import Channel
     from .message import Message
+
+
+class MentionFlags(IntEnum):
+    NO_PREFERENCE = 0
+    PREFER_MENTION = 1
+    PREFER_NO_MENTION = 2
 
 
 @dataclass(slots=True)
@@ -39,6 +46,7 @@ class User:
     avatar_color: str | None = None
     bot: bool = False
     flags: int = 0
+    mention_flags: MentionFlags = MentionFlags.NO_PREFERENCE
 
     # Additional profile fields (may not be available for all users)
     bio: str | None = None  # User bio/about me
@@ -59,6 +67,7 @@ class User:
             avatar_color=data.get("avatar_color"),
             bot=data.get("bot", False),
             flags=data.get("flags", 0),
+            mention_flags=MentionFlags(data.get("mention_flags", 0)),
             bio=data.get("bio"),
             banner_hash=data.get("banner"),
             banner_color=data.get("banner_color"),

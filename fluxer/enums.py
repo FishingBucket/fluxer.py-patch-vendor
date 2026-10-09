@@ -132,6 +132,12 @@ class ChannelType(enum.IntEnum):
     GROUP_DM = 3
     GUILD_CATEGORY = 4
     GUILD_ANNOUNCEMENT = 5
+    ANNOUNCEMENT_THREAD = 10
+    PUBLIC_THREAD = 11
+    PRIVATE_THREAD = 12
+    GUILD_FORUM = 15
+    GUILD_MEDIA = 16
+    GUILD_LINK = 998
 
 
 # =============================================================================

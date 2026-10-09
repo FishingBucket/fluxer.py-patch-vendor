@@ -377,6 +377,7 @@ class HTTPClient:
         embeds: list[Any] | None = None,
         files: list[Any] | None = None,
         message_reference: dict[str, Any] | None = None,
+        allowed_mentions: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """POST /channels/{channel_id}/messages
 
@@ -388,6 +389,8 @@ class HTTPClient:
             files: List of file objects to attach
             message_reference: Reference to another message for replies
                 Example: {"message_id": "123456789", "channel_id": "987654321"}
+            allowed_mentions: Allowed mentions object
+                Example: {"parse": ["users", "everyone"], "users": "123213"}
         """
         route = self._route(
             "POST",
@@ -418,6 +421,9 @@ class HTTPClient:
 
         if message_reference is not None:
             payload["message_reference"] = message_reference
+
+        if allowed_mentions is not None:
+            payload["allowed_mentions"] = allowed_mentions
 
         # --- File handling ---
         if files:

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from ..http import HTTPClient
 
-from .user import User
+from .user import User, MentionFlags
 
 
 @dataclass(slots=True)
@@ -28,6 +28,7 @@ class GuildMember:
     roles: list[int] = field(default_factory=list)  # Role IDs (as ints)
     joined_at: str | None = None  # ISO 8601 timestamp
     guild_id: int | None = None
+    _mention_flags: MentionFlags | None = None
 
     # Invite/join tracking
     join_source_type: int | None = None
@@ -63,6 +64,7 @@ class GuildMember:
             accent_color=data.get("accent_color"),
             roles=[int(role_id) for role_id in data.get("roles", [])],
             joined_at=data.get("joined_at"),
+            _mention_flags=MentionFlags(data["mention_flags"]) if data.get("mention_flags") is None else None,
             join_source_type=data.get("join_source_type"),
             source_invite_code=data.get("source_invite_code"),
             inviter_id=int(data["inviter_id"]) if data.get("inviter_id") else None,
@@ -73,6 +75,10 @@ class GuildMember:
             or (int(data["guild_id"]) if data.get("guild_id") else None),
             _http=http,
         )
+
+    @property
+    def mention_flags(self) -> MentionFlags:
+        return self._mention_flags or self.user.mention_flags
 
     @property
     def display_name(self) -> str:

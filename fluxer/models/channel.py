@@ -76,6 +76,11 @@ class Channel:
         return self.type == ChannelType.DM
 
     @property
+    def is_thread(self) -> bool:
+        """Whether this is a thread channel."""
+        return self.type in {ChannelType.ANNOUNCEMENT_THREAD, ChannelType.PUBLIC_THREAD, ChannelType.PRIVATE_THREAD}
+
+    @property
     def is_category(self) -> bool:
         """Whether this is a category channel."""
         return self.type == ChannelType.GUILD_CATEGORY
