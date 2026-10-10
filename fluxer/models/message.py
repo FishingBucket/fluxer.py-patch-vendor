@@ -21,20 +21,26 @@ if TYPE_CHECKING:
 class AllowedMentions:
     """Represents an allowed mentions object."""
 
-    users: list[int]
-    roles: list[int]
+    users: list[int] | None | bool
+    roles: list[int] | None | bool
     everyone: bool
     replied_user: bool
 
     def to_json(self) -> dict[str, Any]:
         parse = []
-        if self.users: parse.append("users")
-        if self.roles: parse.append("roles")
+        res = {}
+        if self.users is True:
+            parse.append("users")
+        elif self.users:
+            res["users"] = [str(user) for user in self.users]
+        if self.roles is True:
+            parse.append("roles")
+        elif self.roles:
+            res["roles"] = [str(role) for role in self.roles]
+
         if self.everyone: parse.append("everyone")
-        return {
+        return res | {
             "parse": parse,
-            "users": [str(user) for user in self.users],
-            "roles": [str(role) for role in self.roles],
             "replied_user": self.replied_user
         }
 
