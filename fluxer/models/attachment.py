@@ -18,6 +18,7 @@ class Attachment:
     content_type: str | None = None
     description: str | None = None
     ephemeral: bool = False
+    flags: int = 0
 
     @classmethod
     def from_data(cls, data: dict[str, Any]) -> Attachment:
@@ -32,6 +33,7 @@ class Attachment:
             content_type=data.get("content_type"),
             description=data.get("description"),
             ephemeral=data.get("ephemeral", False),
+            flags=data.get("flags", 0),
         )
 
     def to_dict(self) -> dict[str, Any]:

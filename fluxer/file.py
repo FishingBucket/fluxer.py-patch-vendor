@@ -13,7 +13,7 @@ class File:
         fp: A file-like object, path string, or bytes to upload.
         filename: The filename to use when uploading. If not provided, will be
                  inferred from the file path or set to "untitled".
-        spoiler: Whether to mark the file as a spoiler (adds SPOILER_ prefix).
+        flags: A bitmask of flags.
         description: Optional description for the file (alt text).
 
     Examples:
@@ -41,12 +41,12 @@ class File:
         fp: str | bytes | Path | BinaryIO,
         *,
         filename: str | None = None,
-        spoiler: bool = False,
+        flags: int = 0,
         description: str | None = None,
     ) -> None:
         self.fp = fp
         self._filename = filename
-        self.spoiler = spoiler
+        self.flags = flags
         self.description = description
         self._closer: BinaryIO | None = None
         self._original_pos: int | None = None
@@ -60,10 +60,6 @@ class File:
             name = Path(self.fp).name
         else:
             name = "untitled"
-
-        # Add SPOILER_ prefix if spoiler is True
-        if self.spoiler and not name.startswith("SPOILER_"):
-            name = f"SPOILER_{name}"
 
         return name
 
@@ -113,6 +109,8 @@ class File:
         return {
             "data": self._get_bytes(),
             "filename": self.filename,
+            "flags": self.flags,
+            "description": self.description
         }
 
     def close(self) -> None:
