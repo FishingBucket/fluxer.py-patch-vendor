@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from ..voice import VoiceClient
     from .embed import Embed
     from .guild import Guild
-    from .message import Message
+    from .message import Message, AllowedMentions
 
 
 @dataclass(slots=True)
@@ -94,6 +94,7 @@ class Channel:
         file: File | None = None,
         files: list[File] | None = None,
         message_reference: dict[str, Any] | None = None,
+        allowed_mentions: AllowedMentions | None = None
     ) -> Message:
         """Send a message to this channel.
 
@@ -104,6 +105,7 @@ class Channel:
             file: A single File object to attach.
             files: Multiple File objects to attach.
             message_reference: Reference to another message for replies.
+            allowed_mentions: Mentions that actually pass through.
 
         Returns:
             The created Message object.
@@ -142,6 +144,7 @@ class Channel:
             content=content,
             files=file_list,
             message_reference=message_reference,
+            allowed_mentions=allowed_mentions and allowed_mentions.to_json(),
             **combined_kwargs,
         )
         msg = Message.from_data(data, self._http)

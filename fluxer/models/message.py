@@ -190,6 +190,7 @@ class Message:
         embeds: list[Any] | None = None,
         file: File | None = None,
         files: list[File] | None = None,
+        allowed_mentions: AllowedMentions | None = None,
         **kwargs: Any,
     ) -> Message:
         """Reply to this message with a message reference.
@@ -200,6 +201,7 @@ class Message:
             embeds: Multiple embeds to include.
             file: A single File object to attach.
             files: Multiple File objects to attach.
+            allowed_mentions: Mentions that actually pass through.
             **kwargs: Additional arguments to pass to send_message
 
         Returns:
@@ -232,6 +234,7 @@ class Message:
             content=content,
             message_reference=message_reference,
             files=file_list,
+            allowed_mentions=allowed_mentions and allowed_mentions.to_json(),
             **combined_kwargs,
         )
         msg = Message.from_data(data, self._http)
