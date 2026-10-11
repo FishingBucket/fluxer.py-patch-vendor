@@ -64,7 +64,7 @@ class GuildMember:
             accent_color=data.get("accent_color"),
             roles=[int(role_id) for role_id in data.get("roles", [])],
             joined_at=data.get("joined_at"),
-            _mention_flags=MentionFlags(data["mention_flags"]) if data.get("mention_flags") is None else None,
+            _mention_flags=MentionFlags(data["mention_flags"]) if data.get("mention_flags") is not None else None,
             join_source_type=data.get("join_source_type"),
             source_invite_code=data.get("source_invite_code"),
             inviter_id=int(data["inviter_id"]) if data.get("inviter_id") else None,
