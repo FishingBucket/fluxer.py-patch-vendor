@@ -110,8 +110,7 @@ class File:
             "data": self._get_bytes(),
             "filename": self.filename,
             "flags": self.flags,
-            "description": self.description
-        }
+        } | ({"description": self.description} if self.description else {})
 
     def close(self) -> None:
         """Close the underlying file handle if it was opened by this File object."""
