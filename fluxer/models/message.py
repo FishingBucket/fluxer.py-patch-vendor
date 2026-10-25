@@ -67,6 +67,8 @@ class Message:
     reactions: list[Reaction] = field(default_factory=list)
     referenced_message: Message | None = None
 
+    thread: dict[str, Any] | None = None
+
     _http: HTTPClient | None = field(default=None, repr=False)
     _channel: Channel | None = field(default=None, repr=False)
     _guild: Guild | None = field(default=None, repr=False)
@@ -100,6 +102,7 @@ class Message:
                 if (ref_data := data.get("referenced_message"))
                 else None
             ),
+            thread=data.get("thread", None),
             mentions_everyone=data.get("mentions_everyone", False),
             mention_roles=[int(role) for role in data.get("mention_roles", [])]
         )
